@@ -1,0 +1,7 @@
+feature,top 20% uplift,bottom 20% uplift,all customers
+tx_30d,1.0,12.0,4.0
+spend_30d,477.54499999999996,6011.72,1747.25
+share_tx_points_spent,0.2727272727272727,0.11650485436893204,0.18181818181818182
+exp_points_spent,5.0,5.0,5.0
+tx_30_60d,4.0,12.0,5.0
+days_issue_to_redeem,374.5,364.0,365.0
