@@ -9,7 +9,7 @@
   "best_model": "S-learner",
   "best_model_key": "s_learner",
   "budget_fraction": 0.3,
-  "surrogate_r2": 0.9771301536928368,
+  "surrogate_r2": 0.974497939354912,
   "economics": {
     "gross_margin": 0.22,
     "contact_cost": 2.5,

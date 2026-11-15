@@ -1,0 +1,7 @@
+feature,top 20% uplift,bottom 20% uplift,all customers
+age,55.0,39.0,45.0
+points_burn_ratio,1.358550180333244,0.593302482791501,0.7695561629571783
+days_issue_to_redeem,99.0,142.0,132.0
+days_since_issue,379.0,545.0,486.0
+n_tx,10.0,34.0,15.0
+spend_30d,805.385,2841.565,1779.275

@@ -7,13 +7,13 @@
 | policy                                | contacted   | uplift_in_targeted   | profit_per_1000   | 95% CI          |
 |:--------------------------------------|:------------|:---------------------|:------------------|:----------------|
 | Contact nobody                        | 0%          |                      | 0                 | [0, 0]          |
-| Contact everybody                     | 100%        | +0.049               | -1,360            | [-4,841, 2,033] |
-| Random 30%                            | 30%         | +0.036               | -2,110            | [-4,146, -269]  |
-| Response model, top 30%               | 30%         | +0.032               | -1,177            | [-3,196, 974]   |
-| Churn-risk model, top 30%             | 30%         | +0.061               | 552               | [-1,157, 1,902] |
-| S-learner uplift, top 30%             | 30%         | +0.113               | 2,402             | [795, 4,066]    |
-| S-learner expected profit > 0 (≤ 30%) | 27%         | +0.106               | 2,346             | [342, 4,260]    |
-| Oracle (true uplift) ≤ 30%            | 17%         | +0.241               | 3,634             | [2,212, 5,171]  |
+| Contact everybody                     | 100%        | +0.049               | -1,756            | [-5,245, 1,350] |
+| Random 30%                            | 30%         | +0.037               | -783              | [-2,684, 1,175] |
+| Response model, top 30%               | 30%         | +0.007               | -2,149            | [-4,343, -130]  |
+| Churn-risk model, top 30%             | 30%         | +0.072               | 112               | [-1,254, 1,494] |
+| S-learner uplift, top 30%             | 30%         | +0.124               | 2,264             | [352, 3,988]    |
+| S-learner expected profit > 0 (≤ 30%) | 25%         | +0.134               | 2,748             | [668, 4,737]    |
+| Oracle (true uplift) ≤ 30%            | 17%         | +0.241               | 2,648             | [1,113, 4,110]  |
 
 ![Profit curves](profit.png)
 
@@ -22,14 +22,14 @@ Model selected on validation Qini: **S-learner**. Higher Qini = better ranking o
 
 | model               | kind     | qini_valid   | qini_test   | uplift@10%   | uplift@30%   | spearman_true_tau   | pehe   |
 |:--------------------|:---------|:-------------|:------------|:-------------|:-------------|:--------------------|:-------|
-| S-learner           | uplift   | 0.037        | 0.031       | 0.146        | 0.113        | 0.507               | 0.075  |
-| T-learner           | uplift   | 0.026        | 0.020       | 0.133        | 0.092        | 0.335               | 0.115  |
-| X-learner           | uplift   | 0.029        | 0.027       | 0.098        | 0.098        | 0.396               | 0.098  |
-| DR-learner          | uplift   | 0.021        | 0.016       | 0.080        | 0.085        | 0.346               | 0.115  |
-| Transformed outcome | uplift   | 0.025        | 0.025       | 0.106        | 0.084        | 0.257               | 0.172  |
-| Random              | baseline |              | -0.001      | 0.016        | 0.036        |                     |        |
-| Response model      | baseline |              | -0.004      | 0.008        | 0.032        |                     |        |
-| Churn-risk model    | baseline |              | 0.016       | 0.018        | 0.061        |                     |        |
+| S-learner           | uplift   | 0.049        | 0.037       | 0.225        | 0.124        | 0.529               | 0.074  |
+| T-learner           | uplift   | 0.032        | 0.023       | 0.197        | 0.088        | 0.351               | 0.111  |
+| X-learner           | uplift   | 0.035        | 0.023       | 0.183        | 0.105        | 0.426               | 0.094  |
+| DR-learner          | uplift   | 0.028        | 0.021       | 0.185        | 0.091        | 0.363               | 0.112  |
+| Transformed outcome | uplift   | 0.025        | 0.021       | 0.117        | 0.080        | 0.207               | 0.173  |
+| Random              | baseline |              | -0.003      | 0.039        | 0.037        |                     |        |
+| Response model      | baseline |              | -0.011      | 0.000        | 0.007        |                     |        |
+| Churn-risk model    | baseline |              | 0.021       | 0.087        | 0.072        |                     |        |
 
 ![Qini curves](qini.png)
 
@@ -38,7 +38,7 @@ Model selected on validation Qini: **S-learner**. Higher Qini = better ranking o
 ![Calibration](calibration.png)
 
 #### Who are the persuadables?
-Surrogate fidelity R² = 0.98.
+Surrogate fidelity R² = 0.97.
 
 ![Drivers](drivers.png)
 
@@ -46,23 +46,23 @@ Median profile of the customers the model ranks highest vs lowest:
 
 | feature               | top 20% uplift   | bottom 20% uplift   | all customers   |
 |:----------------------|:-----------------|:--------------------|:----------------|
-| tx_30d                | 1.00             | 12.00               | 4.00            |
-| spend_30d             | 477.54           | 6,011.72            | 1,747.25        |
-| share_tx_points_spent | 0.27             | 0.12                | 0.18            |
-| exp_points_spent      | 5.00             | 5.00                | 5.00            |
-| tx_30_60d             | 4.00             | 12.00               | 5.00            |
-| days_issue_to_redeem  | 374.50           | 364.00              | 365.00          |
+| tx_30d                | 1.00             | 10.00               | 4.00            |
+| reg_points_spent      | 139.30           | 99.60               | 98.60           |
+| days_issue_to_redeem  | 377.00           | 341.50              | 362.00          |
+| spend_30d             | 590.76           | 5,008.36            | 1,774.42        |
+| share_tx_points_spent | 0.27             | 0.09                | 0.18            |
+| tx_30_60d             | 4.00             | 11.00               | 5.00            |
 
 #### Sensitivity to campaign economics
 
 | offer_cost   | contact_cost   | share_with_positive_expected_profit   | best_fraction_on_test   | profit_per_1000_at_best   |
 |:-------------|:---------------|:--------------------------------------|:------------------------|:--------------------------|
-| 7.5          | 1.25           | 45%                                   | 30%                     | 3,538                     |
-| 7.5          | 2.5            | 36%                                   | 30%                     | 3,157                     |
-| 7.5          | 5.0            | 25%                                   | 24%                     | 2,516                     |
-| 15.0         | 1.25           | 33%                                   | 22%                     | 2,987                     |
-| 15.0         | 2.5            | 27%                                   | 22%                     | 2,706                     |
-| 15.0         | 5.0            | 18%                                   | 22%                     | 2,144                     |
-| 30.0         | 1.25           | 18%                                   | 14%                     | 1,914                     |
-| 30.0         | 2.5            | 15%                                   | 14%                     | 1,734                     |
-| 30.0         | 5.0            | 11%                                   | 14%                     | 1,374                     |
+| 7.5          | 1.25           | 43%                                   | 34%                     | 4,220                     |
+| 7.5          | 2.5            | 35%                                   | 34%                     | 3,798                     |
+| 7.5          | 5.0            | 23%                                   | 24%                     | 3,073                     |
+| 15.0         | 1.25           | 31%                                   | 28%                     | 3,523                     |
+| 15.0         | 2.5            | 25%                                   | 28%                     | 3,174                     |
+| 15.0         | 5.0            | 18%                                   | 28%                     | 2,475                     |
+| 30.0         | 1.25           | 17%                                   | 26%                     | 2,023                     |
+| 30.0         | 2.5            | 14%                                   | 18%                     | 1,727                     |
+| 30.0         | 5.0            | 10%                                   | 18%                     | 1,275                     |
