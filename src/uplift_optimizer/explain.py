@@ -35,7 +35,8 @@ def uplift_drivers(
     for j, col in enumerate(X.columns):
         x = X[col].to_numpy(dtype=float)
         ok = ~np.isnan(x)
-        corr = np.corrcoef(x[ok], contrib[ok, j])[0, 1] if ok.sum() > 2 and x[ok].std() > 0 else 0.0
+        usable = ok.sum() > 2 and x[ok].std() > 0 and contrib[ok, j].std() > 0  # unused features: 0
+        corr = np.corrcoef(x[ok], contrib[ok, j])[0, 1] if usable else 0.0
         direction.append(corr)
     table = (
         pd.DataFrame({"feature": X.columns, "mean_abs_shap": mean_abs, "direction": direction})

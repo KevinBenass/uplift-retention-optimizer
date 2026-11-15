@@ -42,7 +42,9 @@ def download(dataset: str, raw_dir: Path) -> list[Path]:
             tmp = dest.with_suffix(".part")
             with httpx.stream("GET", url, follow_redirects=True, timeout=120) as r:
                 r.raise_for_status()
-                task = progress.add_task(name, total=int(r.headers.get("content-length", 0)) or None)
+                task = progress.add_task(
+                    name, total=int(r.headers.get("content-length", 0)) or None
+                )
                 with tmp.open("wb") as f:
                     for chunk in r.iter_bytes(1 << 20):
                         f.write(chunk)

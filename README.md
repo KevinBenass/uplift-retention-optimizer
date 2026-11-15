@@ -112,6 +112,15 @@ Median profile of the customers the model ranks highest vs lowest:
 | 30.0         | 5.0            | 2%                                    | 10%                     | 793                       |
 <!-- RESULTS:END -->
 
+#### What the X5 results show
+
+- **The SMS works on average, but contacting everybody loses money.** It lifts purchases by 3.3 points, yet every recipient who redeems the discount costs 15 RUB, including the 60% who would have bought anyway. Net: −3,449 RUB per 1,000 customers.
+- **Uplift ranking finds the persuadables.** In the top 30% by predicted uplift the SMS adds 6.6 points, against 3.2 for a random 30%, 4.4 for the churn-risk list and 2.5 for the response model. The response model is the classic trap: it ranks sure things first, and it loses money (−1,511, the only 30% policy whose interval is entirely below zero).
+- **Sizing the campaign by profit matters as much as the ranking.** A fixed "top 30%" still roughly breaks even, because the 15 RUB offer only pays for itself on the most persuadable customers. Contacting only customers with positive expected profit (9%) earns **+922 RUB per 1,000**, the only policy with a positive estimate.
+- **That gain is not yet statistically certain.** Its 95% interval (−223 to +1,878) includes zero. The memo therefore recommends confirming it with a champion/challenger campaign rather than rolling it out on this evidence alone.
+- **The decision is sensitive to the offer cost, and the sensitivity grid quantifies how.** Halving the offer to 7.5 RUB roughly doubles the profitable share (9% → 17%). A cheaper offer for the marginally persuadable is the most valuable next experiment. *(The grid's `best_fraction_on_test` is chosen on the test set, so its profit column is an optimistic upper bound, not a held-out estimate.)*
+- **Who the offer moves:** older customers who actively burn loyalty points, with fewer purchases overall and lower recent spend. Frequent, high-spending shoppers buy anyway.
+
 The memo for the CRM lead is generated alongside: [`docs/memo_x5.md`](docs/memo_x5.md).
 
 ## Simulation study: does the evaluation pick the right model?
@@ -120,10 +129,10 @@ On real data the true effect of the offer on each customer is never observed, so
 
 Findings from the simulated campaign (60k customers, 12k on test):
 
-- **The validation Qini picks the model that is closest to the truth.** The S-learner had the best validation Qini (0.037) and also the highest rank correlation with the true uplift (Spearman 0.51, versus 0.26–0.40 for the other learners). The top two models are the same by both criteria.
-- **Uplift targeting is the only policy with a clearly positive profit.** Contacting the top 30% by uplift earned +2,402 RUB per 1,000 customers (95% CI 795 to 4,066). Churn-risk targeting earned +552 (CI −1,157 to 1,902), and contacting everybody lost 1,360.
-- **About two thirds of the achievable value is captured.** An oracle that knows the true uplift earns +3,634 per 1,000.
-- **The drivers recovered match the simulation's mechanics.** Customers whose recent activity dropped and who habitually redeem loyalty points rank highest.
+- **The validation Qini picks the model that is closest to the truth.** The S-learner had the best validation Qini (0.049) and also the highest rank correlation with the true uplift (Spearman 0.53, versus 0.21–0.43 for the other learners). Model selection by Qini can be trusted here.
+- **Uplift targeting is the only approach with a clearly positive profit.** The top 30% by uplift earned +2,264 RUB per 1,000 customers (95% CI 352 to 3,988). Churn-risk targeting earned +112 (CI −1,254 to 1,494), the response model lost 2,149 and contacting everybody lost 1,756.
+- **Profit-based sizing reaches oracle level.** Contacting customers with positive expected profit (25%) earned +2,748, statistically indistinguishable from an oracle that knows each customer's true uplift (+2,648; the intervals overlap almost entirely).
+- **The drivers recovered match the simulation's mechanics.** The customers ranked highest have few recent transactions and habitually redeem loyalty points, which is how the simulation assigns uplift.
 
 ![Simulated profit curves](results/synthetic/profit.png)
 

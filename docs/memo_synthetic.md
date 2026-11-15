@@ -3,7 +3,7 @@
 **To:** Head of CRM · **Data:** randomized campaign, `synthetic` · **Model:** S-learner
 
 ## Recommendation
-Send the offer to **25% of customers**, chosen by expected incremental profit, instead of the current churn-risk list. On held-out data this earns **2,748 RUB per 1,000 customers** (95% CI 668 to 4,737), versus 112 RUB for churn-risk targeting at the same budget cap and -1,756 RUB for contacting everybody. For a base of 100,000 customers that is about **263,522 RUB per campaign** over the current approach.
+Send the offer to **25% of customers**, chosen by expected incremental profit, instead of the current churn-risk list. On held-out data this earns **2,748 RUB per 1,000 customers** (95% CI 668 to 4,737), versus 112 RUB for churn-risk targeting at the same budget cap and -1,756 RUB for contacting everybody. For a base of 100,000 customers that is about **260,000 RUB per campaign** over the current approach.
 
 ## Why the usual lists earn less
 - **Contacting everyone** pays the offer to customers who would have bought anyway: -1,756 RUB per 1,000.

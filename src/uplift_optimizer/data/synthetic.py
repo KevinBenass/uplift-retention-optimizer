@@ -28,16 +28,18 @@ def _sigmoid(x: np.ndarray) -> np.ndarray:
     return 1 / (1 + np.exp(-x))
 
 
-def simulate(n_clients: int, seed: int = 0) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+def simulate(
+    n_clients: int, seed: int = 0
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Return (uplift_train, clients, purchases, truth) DataFrames in X5 format."""
     rng = np.random.default_rng(seed)
     ids = np.array([f"{i:010x}" for i in rng.choice(16**10, n_clients, replace=False)])
 
     # ---- latent traits
-    weekly_visits = rng.gamma(shape=1.6, scale=1.1, size=n_clients)          # loyalty
-    lapsing = rng.random(n_clients) < 0.30                                   # recent drop-off
-    price_sens = rng.beta(2, 3, n_clients)                                   # promo affinity
-    basket_mu = rng.lognormal(mean=6.1, sigma=0.45, size=n_clients)         # ~450 RUB
+    weekly_visits = rng.gamma(shape=1.6, scale=1.1, size=n_clients)  # loyalty
+    lapsing = rng.random(n_clients) < 0.30  # recent drop-off
+    price_sens = rng.beta(2, 3, n_clients)  # promo affinity
+    basket_mu = rng.lognormal(mean=6.1, sigma=0.45, size=n_clients)  # ~450 RUB
     n_stores = rng.integers(1, 4, n_clients)
 
     # ---- purchase history (transaction level, then product lines)
@@ -47,9 +49,24 @@ def simulate(n_clients: int, seed: int = 0) -> tuple[pd.DataFrame, pd.DataFrame,
     n_late = rng.poisson(rate_late * 45)
     n_tx = n_early + n_late
     owner = np.repeat(np.arange(n_clients), n_tx)
-    is_late = np.concatenate([np.r_[np.zeros(a, bool), np.ones(b, bool)] for a, b in zip(n_early, n_late, strict=True)]) if n_tx.sum() else np.zeros(0, bool)
-    days_ago = np.where(is_late, rng.uniform(0, 45, len(owner)), rng.uniform(45, HISTORY_DAYS, len(owner)))
-    ts = REF_DATE - pd.to_timedelta(days_ago, unit="D") + pd.to_timedelta(rng.integers(8 * 3600, 22 * 3600, len(owner)), unit="s")
+    is_late = (
+        np.concatenate(
+            [
+                np.r_[np.zeros(a, bool), np.ones(b, bool)]
+                for a, b in zip(n_early, n_late, strict=True)
+            ]
+        )
+        if n_tx.sum()
+        else np.zeros(0, bool)
+    )
+    days_ago = np.where(
+        is_late, rng.uniform(0, 45, len(owner)), rng.uniform(45, HISTORY_DAYS, len(owner))
+    )
+    ts = (
+        REF_DATE
+        - pd.to_timedelta(days_ago, unit="D")
+        + pd.to_timedelta(rng.integers(8 * 3600, 22 * 3600, len(owner)), unit="s")
+    )
     basket = np.round(basket_mu[owner] * rng.lognormal(0, 0.35, len(owner)), 2)
     spend_points = rng.random(len(owner)) < price_sens[owner] * 0.5
     express = rng.random(len(owner)) < 0.15 + 0.3 * price_sens[owner]
@@ -63,7 +80,9 @@ def simulate(n_clients: int, seed: int = 0) -> tuple[pd.DataFrame, pd.DataFrame,
             "transaction_datetime": ts.strftime("%Y-%m-%d %H:%M:%S"),
             "regular_points_received": np.round(basket * 0.01, 1),
             "express_points_received": np.where(express, np.round(basket * 0.02, 1), 0.0),
-            "regular_points_spent": np.where(spend_points, -np.round(basket * rng.uniform(0.02, 0.1, len(owner)), 1), 0.0),
+            "regular_points_spent": np.where(
+                spend_points, -np.round(basket * rng.uniform(0.02, 0.1, len(owner)), 1), 0.0
+            ),
             "express_points_spent": np.where(spend_points & express, -5.0, 0.0),
             "purchase_sum": basket,
             "store_id": [f"s{s:05d}" for s in store],
@@ -85,10 +104,14 @@ def simulate(n_clients: int, seed: int = 0) -> tuple[pd.DataFrame, pd.DataFrame,
     clients = pd.DataFrame(
         {
             "client_id": ids,
-            "first_issue_date": (REF_DATE - pd.to_timedelta(issue_ago, unit="D")).strftime("%Y-%m-%d %H:%M:%S"),
+            "first_issue_date": (REF_DATE - pd.to_timedelta(issue_ago, unit="D")).strftime(
+                "%Y-%m-%d %H:%M:%S"
+            ),
             "first_redeem_date": np.where(
                 redeemer,
-                (REF_DATE - pd.to_timedelta(issue_ago * rng.uniform(0, 0.9, n_clients), unit="D")).strftime("%Y-%m-%d %H:%M:%S"),
+                (
+                    REF_DATE - pd.to_timedelta(issue_ago * rng.uniform(0, 0.9, n_clients), unit="D")
+                ).strftime("%Y-%m-%d %H:%M:%S"),
                 None,
             ),
             "age": age,
@@ -103,9 +126,7 @@ def simulate(n_clients: int, seed: int = 0) -> tuple[pd.DataFrame, pd.DataFrame,
     persuadable = lapsing & (price_sens > 0.35) & (weekly_visits > 0.4)
     sleeping_dog = (weekly_visits > 2.5) & (price_sens < 0.2)
     tau_logit = (
-        1.1 * persuadable * price_sens * 2
-        + 0.25 * (~lapsing) * price_sens
-        - 0.6 * sleeping_dog
+        1.1 * persuadable * price_sens * 2 + 0.25 * (~lapsing) * price_sens - 0.6 * sleeping_dog
     )
     p1 = _sigmoid(base_logit + tau_logit)
     treatment = (rng.random(n_clients) < 0.5).astype(int)
@@ -113,9 +134,13 @@ def simulate(n_clients: int, seed: int = 0) -> tuple[pd.DataFrame, pd.DataFrame,
 
     train = pd.DataFrame({"client_id": ids, "treatment_flg": treatment, "target": target})
     archetype = np.select(
-        [persuadable, sleeping_dog, p0 > 0.7, p0 < 0.25], ["persuadable", "sleeping_dog", "sure_thing", "lost_cause"], "other"
+        [persuadable, sleeping_dog, p0 > 0.7, p0 < 0.25],
+        ["persuadable", "sleeping_dog", "sure_thing", "lost_cause"],
+        "other",
     )
-    truth = pd.DataFrame({"client_id": ids, "p0": p0, "p1": p1, "tau": p1 - p0, "archetype": archetype})
+    truth = pd.DataFrame(
+        {"client_id": ids, "p0": p0, "p1": p1, "tau": p1 - p0, "archetype": archetype}
+    )
     return train, clients, purchases, truth
 
 

@@ -129,9 +129,7 @@ def build_hillstrom(raw_dir: Path) -> pd.DataFrame:
     df["basket_value"] = conv.mean()
     feats = raw[["recency", "history", "mens", "womens", "newbie"]].copy()
     feats["history_segment"] = raw["history_segment"].str.extract(r"^(\d)").astype(int)
-    feats = pd.concat(
-        [feats, pd.get_dummies(raw[["zip_code", "channel"]], dtype=int)], axis=1
-    )
+    feats = pd.concat([feats, pd.get_dummies(raw[["zip_code", "channel"]], dtype=int)], axis=1)
     return _order(pd.concat([df, feats], axis=1))
 
 

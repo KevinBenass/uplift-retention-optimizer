@@ -20,6 +20,13 @@ ACCENT, ACCENT2 = "#2563eb", "#059669"
 BASELINE_COLORS = {"Random": MUTED, "Response model": "#d97706", "Churn-risk model": "#dc2626"}
 
 
+def _round_sig(x: float, digits: int = 2) -> float:
+    """Round to significant digits: a campaign estimate is not precise to the ruble."""
+    import math
+
+    return 0.0 if x == 0 else round(x, digits - 1 - math.floor(math.log10(abs(x))))
+
+
 def _style(ax, title: str, xlabel: str, ylabel: str) -> None:
     ax.set_title(title, loc="left", fontsize=11, color=INK, fontweight="bold")
     ax.set_xlabel(xlabel, color=INK)
@@ -279,7 +286,13 @@ def write_memo(
         f"**{rec.profit_per_1000:,.0f} {cur} per 1,000 customers** (95% CI {rec.ci_low:,.0f} to {rec.ci_high:,.0f}), "
         f"versus {churn.profit_per_1000:,.0f} {cur} for churn-risk targeting at the same budget cap "
         f"and {everyone.profit_per_1000:,.0f} {cur} for contacting everybody. "
-        f"For a base of {base:,} customers that is about **{gain:,.0f} {cur} per campaign** over the current approach.",
+        f"For a base of {base:,} customers that is about **{_round_sig(gain):,.0f} {cur} per campaign** over the current approach."
+        + (
+            " The interval includes zero, so this is a promising estimate to confirm with the "
+            "champion/challenger test below, not a guaranteed gain."
+            if rec.ci_low < 0
+            else ""
+        ),
         "",
         "## Why the usual lists earn less",
         f"- **Contacting everyone** pays the offer to customers who would have bought anyway: "
