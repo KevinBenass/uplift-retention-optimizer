@@ -101,6 +101,10 @@ results/<dataset>/     tables, figures and REPORT.md for each run
 - **Post-campaign spend is not observed in X5**, only whether the customer bought, so revenue is approximated by the customer's historical average basket.
 - **One campaign, one offer.** Uplift estimated for this SMS offer does not transfer to a different offer or channel without a new experiment. The memo recommends a champion/challenger rollout with a holdout so the model keeps being measured.
 
+## How this was built
+
+Designed and evaluated by me; implemented with Claude Code. I reviewed every result and made the evaluation and design decisions.
+
 ## License
 
 MIT. X5 RetailHero data is provided by X5 Retail Group for research; Hillstrom data by Kevin Hillstrom (MineThatData).
